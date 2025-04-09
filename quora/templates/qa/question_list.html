@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Create Question Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Questions</h2>
+        <a href="{% url 'create_question' %}" class="btn btn-primary">Create Question</a>
+    </div>
+
+    <!-- Questions List -->
+    <div class="row">
+        {% for question in questions %}
+        <div class="col-md-12 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ question.text }}</h5>
+                    <p class="card-text">Asked by {{ question.created_by }} • {{ question.created_at|timesince }} ago</p>
+
+                    <!-- Answers Section -->
+                    <div class="answers-section">
+                        {% for answer in question.answers.all %}
+                        <div class="answer border-top pt-3 mt-3">
+                            <p>{{ answer.answer_text }}</p>
+                            <small class="text-muted">Answered by {{ answer.user }} • {{ answer.answered_at|timesince }} ago</small>
+
+                            <!-- Like and Dislike Buttons -->
+                            <div class="mt-2">
+                                <form action="{% url 'like_answer' answer.id %}" method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                        👍 {{ answer.upvote_count }}
+                                    </button>
+                                </form>
+                                <form action="{% url 'dislike_answer' answer.id %}" method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        👎 {{ answer.downvote_count }}
+                                    </button>
+                                </form>
+                                <a href="{% url 'comment_on_answer' answer.id %}" class="btn btn-sm btn-outline-info" data-toggle="collapse" data-target="#comment-form-{{ answer.id }}">💬 Comment</a>
+                            </div>
+
+                            <!-- Comments Section -->
+                            <div class="mt-2">
+                                {% if answer.comments.count %}
+                                <p><strong>First Comment:</strong> {{ answer.comments.first.comment_text }}</p>
+                                {% endif %}
+                                <button class="btn btn-sm btn-link" data-toggle="collapse" data-target="#comments-{{ answer.id }}">Show All Comments</button>
+                                <div id="comments-{{ answer.id }}" class="collapse">
+                                    {% for comment in answer.comments.all %}
+                                    <p>{{ comment.comment_text }} - by {{ comment.user }}</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Comment Form -->
+                            <div id="comment-form-{{ answer.id }}" class="collapse mt-3">
+                                <form action="{% url 'comment_on_answer' answer.id %}" method="post">
+                                    {% csrf_token %}
+                                    <textarea name="comment_text" class="form-control" placeholder="Write your comment here..." required></textarea>
+                                    <button type="submit" class="btn btn-success mt-2">Submit Comment</button>
+                                </form>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p>No answers yet.</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Answer Button -->
+                    {% if user.is_authenticated %}
+                    <button class="btn btn-sm btn-primary mt-2" data-toggle="collapse" data-target="#answer-form-{{ question.id }}">Answer this question</button>
+
+                    <!-- Answer Form -->
+                    <div id="answer-form-{{ question.id }}" class="collapse mt-3">
+                        <form action="{% url 'answer_question' question.id %}" method="post">
+                            {% csrf_token %}
+                            <textarea name="answer_text" class="form-control" placeholder="Write your answer here..." required></textarea>
+                            <button type="submit" class="btn btn-success mt-2">Submit Answer</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No questions available.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

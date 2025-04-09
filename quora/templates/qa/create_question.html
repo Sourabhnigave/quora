@@ -1,0 +1,22 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Ask a Question</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.text.label_tag }}
+            {{ form.text }}
+            {% if form.text.errors %}
+                <div class="text-danger">
+                    {{ form.text.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-success mt-2">Submit</button>
+    </form>
+</div>
+{% endblock %}

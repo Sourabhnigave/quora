@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>Answering Question</h3>
+    <p class="lead">{{ question.text }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.answer_text.label_tag }}
+            {{ form.answer_text }}
+            {% if form.answer_text.errors %}
+                <div class="text-danger">
+                    {{ form.answer_text.errors }}
+                </div>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-success mt-2">Submit Answer</button>
+    </form>
+</div>
+{% endblock %}
