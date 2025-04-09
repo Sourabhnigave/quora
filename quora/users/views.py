@@ -11,47 +11,42 @@ from django.contrib.auth.decorators import login_required
 
 
 
-# Register View
 def register(request):
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            # Create a new user
             form.save()
             messages.success(request, "Registration successful! You can now log in.")
             return redirect('login')  # Redirect to login page
         else:
-            # If form is not valid, display errors
-            for message in form.errors.values():
-                messages.error(request, message)
+            for field_errors in form.errors.values():
+                for error in field_errors:
+                    messages.error(request, error)
     else:
         form = CustomUserCreationForm()
 
     return render(request, 'register.html', {'form': form})
-# Login View
 def login_view(request):
     if request.method == 'POST':
-        email = request.POST.get('email')  # Use email field from the form
+        email = request.POST.get('email') 
         password = request.POST.get('password')
 
         if email and password:
-            # Try to get the user with the provided email (check if email exists in the system)
             try:
                 user = User.objects.get(email=email)
             except User.DoesNotExist:
                 user = None
 
             if user and user.check_password(password):
-                login(request, user)  # Log the user in if the password is correct
-                return redirect('home')  # Redirect to home or the desired page
+                login(request, user)  
+                return redirect('home')  
             else:
-                messages.error(request, 'Invalid email or password.')  # Show error if login fails
+                messages.error(request, 'Invalid email or password.')  
         else:
-            messages.error(request, 'Both email and password are required.')  # Show error if fields are empty
+            messages.error(request, 'Both email and password are required.')
     
     return render(request, 'login.html')
 
-# Logout View
 def logout_view(request):
     logout(request)
     return redirect('login')
@@ -78,7 +73,7 @@ def user_form(request, id=None):
             print("User saved successfully.")
             return redirect('user-list')
         else:
-            print("Form errors:", form.errors)  # 👈 Print this
+            print("Form errors:", form.errors) 
     else:
         form = CustomUserCreationForm(instance=user)
 

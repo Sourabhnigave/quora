@@ -1,7 +1,6 @@
 from django import forms
 from .models import Question, Answer, Comment
 
-# Question form
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
@@ -10,7 +9,6 @@ class QuestionForm(forms.ModelForm):
             'text': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Ask your question...'}),
         }
 
-# Answer form
 class AnswerForm(forms.ModelForm):
     class Meta:
         model = Answer
@@ -19,7 +17,6 @@ class AnswerForm(forms.ModelForm):
             'answer_text': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Write your answer...'}),
         }
 
-# Comment form
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
